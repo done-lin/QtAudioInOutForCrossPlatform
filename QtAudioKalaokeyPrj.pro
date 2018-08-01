@@ -26,8 +26,12 @@ DEFINES += QT_DEPRECATED_WARNINGS
 SOURCES += main.cpp\
         mainaudiowindow.cpp \
     audioinoutdevice.cpp \
-    sinwavegenerator.cpp
+    sinwavegenerator.cpp \
+    audioinfo.cpp \
+    audioinputdevwidget.cpp
 
 HEADERS  += mainaudiowindow.h \
     audioinoutdevice.h \
-    sinwavegenerator.h
+    sinwavegenerator.h \
+    audioinfo.h \
+    audioinputdevwidget.h

@@ -3,6 +3,7 @@
 
 #include <QMainWindow>
 #include "audioinoutdevice.h"
+#include "audioinputdevwidget.h"
 
 class MainAudioWindow : public QMainWindow
 {
@@ -12,7 +13,8 @@ public:
     MainAudioWindow(QWidget *parent = 0);
     ~MainAudioWindow();
 
-    AudioInOutDevice *m_AudioInOutDevice;
+    AudioOutDevWidget *m_AudioInOutDevice;
+    audioInputDevWidget *m_AudioInputDevice;
 };
 
 #endif // MAINAUDIOWINDOW_H

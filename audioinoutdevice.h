@@ -12,12 +12,12 @@
 #include <QByteArray>
 #include "sinwavegenerator.h"
 
-class AudioInOutDevice : public QWidget
+class AudioOutDevWidget : public QWidget
 {
     Q_OBJECT
 
 public:
-    AudioInOutDevice(QWidget *parent=0,  int sampleRate=44100, int channelCount=1, int SampleSize=16, int volume=100, bool usingTest=false,
+    explicit AudioOutDevWidget(QWidget *parent=0,  int sampleRate=44100, int channelCount=1, int SampleSize=16, int volume=100, bool usingTest=false,
             QAudioFormat::SampleType sampleType=QAudioFormat::SignedInt, QAudioFormat::Endian byteOrder=QAudioFormat::LittleEndian);
 
 
@@ -28,6 +28,8 @@ public:
     void create_testing_wave_generator(qint64 durationInUs, int soundFrequency);
     void start_testing_wave_generator(void);
     void create_sound_outputer(void);
+    void suspend_output();
+    void resume_output();
 
     QAudioFormat m_format;
     SinWaveGenerator *m_generator;
@@ -37,6 +39,7 @@ private:
     bool m_testFlag;
     QTimer *m_pushTimer;
     QAudioOutput *m_audioOutput;
+    QAudioInput *m_audioInput;
     QAudioDeviceInfo m_device;
     QIODevice *m_output; // not owned
 public slots:

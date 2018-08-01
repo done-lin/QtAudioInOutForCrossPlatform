@@ -7,12 +7,13 @@
 
 const int BufferSize      = 32768;
 
-AudioInOutDevice::AudioInOutDevice(QWidget *parent, int sampleRate, int channelCount, int SampleSize, int volume, bool usingTest,
+AudioOutDevWidget::AudioOutDevWidget(QWidget *parent, int sampleRate, int channelCount, int SampleSize, int volume, bool usingTest,
                                    QAudioFormat::SampleType sampleType, QAudioFormat::Endian byteOrder)
         : QWidget(parent)
         ,   m_device(QAudioDeviceInfo::defaultOutputDevice())
         ,   m_generator(0)
         ,   m_audioOutput(0)
+        ,   m_audioInput(0)
         ,   m_output(0)
         ,   m_buffer(BufferSize, 0)
 {
@@ -30,7 +31,7 @@ AudioInOutDevice::AudioInOutDevice(QWidget *parent, int sampleRate, int channelC
 
     QAudioDeviceInfo info(m_device);
     if (!info.isFormatSupported(m_format)) {
-        qWarning() << "Default format not supported - trying to use nearest";
+        qWarning() << "OUTPUT: Default format not supported - trying to use nearest";
         m_format = info.nearestFormat(m_format);
     }
 
@@ -51,47 +52,57 @@ AudioInOutDevice::AudioInOutDevice(QWidget *parent, int sampleRate, int channelC
 }
 
 
-void AudioInOutDevice::set_sample_rate(int sampleRate)
+void AudioOutDevWidget::set_sample_rate(int sampleRate)
 {
     m_format.setSampleRate(sampleRate);
 }
 
-void AudioInOutDevice::set_channel_count(int channelCount)
+void AudioOutDevWidget::set_channel_count(int channelCount)
 {
     m_format.setChannelCount(channelCount);
 }
 
-void AudioInOutDevice::set_sample_size(int sampleSize)
+void AudioOutDevWidget::set_sample_size(int sampleSize)
 {
     m_format.setSampleSize(sampleSize);
 }
 
-void AudioInOutDevice::set_codec(const QString &codec)
+void AudioOutDevWidget::set_codec(const QString &codec)
 {
     m_format.setCodec(codec);
 }
 
-void AudioInOutDevice::create_testing_wave_generator(qint64 durationInUs, int soundFrequency)
+void AudioOutDevWidget::create_testing_wave_generator(qint64 durationInUs, int soundFrequency)
 {
     if (m_generator)
         delete m_generator;
     m_generator = new SinWaveGenerator(m_format, durationInUs, soundFrequency, this);
 }
 
-void AudioInOutDevice::start_testing_wave_generator()
+void AudioOutDevWidget::start_testing_wave_generator()
 {
     m_generator->start();
     m_audioOutput->start(m_generator);
 }
 
-void AudioInOutDevice::create_sound_outputer()
+void AudioOutDevWidget::create_sound_outputer()
 {
     delete m_audioOutput;
     m_audioOutput = 0;
     m_audioOutput = new QAudioOutput(m_device, m_format, this);
 }
 
-void AudioInOutDevice::slot_volume_changed(int volume)
+void AudioOutDevWidget::suspend_output()
+{
+    m_audioOutput->suspend();
+}
+
+void AudioOutDevWidget::resume_output()
+{
+    m_audioOutput->resume();
+}
+
+void AudioOutDevWidget::slot_volume_changed(int volume)
 {
     if (m_audioOutput) {
         qreal linearVolume =  QAudio::convertVolume(volume / qreal(100),
@@ -102,16 +113,18 @@ void AudioInOutDevice::slot_volume_changed(int volume)
     }
 }
 
-void AudioInOutDevice::slot_audio_output_push_timer_expired()
+void AudioOutDevWidget::slot_audio_output_push_timer_expired()
 {
     if (m_audioOutput && m_audioOutput->state() != QAudio::StoppedState) {
         int chunks = m_audioOutput->bytesFree()/m_audioOutput->periodSize();
         while (chunks) {
-           const qint64 len = m_generator->read(m_buffer.data(), m_audioOutput->periodSize());
-           if (len)
-               m_output->write(m_buffer.data(), len);
-           if (len != m_audioOutput->periodSize())
-               break;
+            if(m_testFlag){
+                const qint64 len = m_generator->read(m_buffer.data(), m_audioOutput->periodSize());
+                if (len)
+                   m_output->write(m_buffer.data(), len);
+                if (len != m_audioOutput->periodSize())
+                   break;
+            }
            --chunks;
         }
     }
