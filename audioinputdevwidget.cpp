@@ -79,17 +79,17 @@ void audioInputDevWidget::createAudioInput()
 
 void audioInputDevWidget::slot_volume_changed(int volume)
 {
-    m_audioInput->setVolume(volume);
+    m_audioInput->setVolume(volume/100.0f);
 }
 
-void audioInputDevWidget::slot_readMore()
-{
-    if (!m_audioInput)
-        return;
-    qint64 len = m_audioInput->bytesReady();
-    if (len > BufferSize)
-        len = BufferSize;
-    qint64 l = m_input->read(m_buffer.data(), len);
-    if (l > 0)
-        m_audioInfo->write(m_buffer.constData(), l);
-}
+//void audioInputDevWidget::slot_readMore()
+//{
+//    if (!m_audioInput)
+//        return;
+//    qint64 len = m_audioInput->bytesReady();
+//    if (len > BufferSize)
+//        len = BufferSize;
+//    qint64 l = m_input->read(m_buffer.data(), len);
+//    if (l > 0)
+//        m_audioInfo->write(m_buffer.constData(), l);
+//}

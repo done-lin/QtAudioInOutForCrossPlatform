@@ -37,7 +37,7 @@ signals:
 
 public slots:
     void slot_volume_changed(int volume);
-    void slot_readMore();
+//    void slot_readMore();
 };
 
 #endif // AUDIOINPUTDEVWIDGET_H

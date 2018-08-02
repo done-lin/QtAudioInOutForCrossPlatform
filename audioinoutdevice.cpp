@@ -105,9 +105,10 @@ void AudioOutDevWidget::resume_output()
 void AudioOutDevWidget::slot_volume_changed(int volume)
 {
     if (m_audioOutput) {
-        qreal linearVolume =  QAudio::convertVolume(volume / qreal(100),
-                                                    QAudio::LogarithmicVolumeScale,
-                                                    QAudio::LinearVolumeScale);
+//        qreal linearVolume =  QAudio::convertVolume(volume / qreal(100),
+//                                                    QAudio::LogarithmicVolumeScale,
+//                                                    QAudio::LinearVolumeScale);
+        qreal linearVolume =  volume / qreal(100.0f);
 
         m_audioOutput->setVolume(linearVolume);
     }
