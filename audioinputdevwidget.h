@@ -25,9 +25,11 @@ public:
     void input_suspend();
     void input_resume();
     void createAudioInput();
+    AudioInfo *m_audioInfo;
+
 private:
     QAudioDeviceInfo m_device;
-    AudioInfo *m_audioInfo;
+
     QAudioFormat m_format;
     QAudioInput *m_audioInput;
     QIODevice *m_input;

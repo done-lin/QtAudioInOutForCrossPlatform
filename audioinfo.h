@@ -24,6 +24,7 @@ public:
     qint64 readData(char *data, qint64 maxlen);
     qint64 writeData(const char *data, qint64 len);
 
+    QByteArray m_inBuffer;
 private:
     const QAudioFormat m_format;
     quint32 m_maxAmplitude;
@@ -31,6 +32,7 @@ private:
 
 signals:
     void update();
+    void signal_sound_data_buffer(QByteArray array);
 };
 
 #endif // AUDIOINFO_H

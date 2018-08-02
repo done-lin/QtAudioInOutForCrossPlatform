@@ -20,7 +20,7 @@ AudioOutDevWidget::AudioOutDevWidget(QWidget *parent, int sampleRate, int channe
     m_pushTimer = new QTimer(this);
     this->setParent(parent);
     m_testFlag = usingTest;
-    connect(m_pushTimer, SIGNAL(timeout()), SLOT(slot_audio_output_push_timer_expired()));
+    //connect(m_pushTimer, SIGNAL(timeout()), SLOT(slot_audio_output_push_timer_expired()));
 
     m_format.setSampleRate(sampleRate);
     m_format.setChannelCount(channelCount);
@@ -47,7 +47,7 @@ AudioOutDevWidget::AudioOutDevWidget(QWidget *parent, int sampleRate, int channe
     }
 
     m_output = m_audioOutput->start();
-    m_pushTimer->start(20);
+    //m_pushTimer->start(20);
 
 }
 
@@ -135,5 +135,21 @@ void AudioOutDevWidget::slot_audio_output_push_timer_expired()
             }
            --chunks;
         }
+    }
+}
+
+void AudioOutDevWidget::slot_audio_output_get_data(QByteArray array)
+{
+    if (m_audioOutput && m_audioOutput->state() != QAudio::StoppedState) {
+        qDebug("%s[%d]: bytesFree:%d, periodSize:%d, array.size:%d", __FUNCTION__, __LINE__,
+               m_audioOutput->bytesFree(),m_audioOutput->periodSize(), array.size());
+
+            if ((m_audioOutput->bytesFree()<m_audioOutput->periodSize()) ||
+                    (array.size() < m_audioOutput->periodSize())){
+                qDebug("%s[%d]: not enough", __FUNCTION__, __LINE__);
+                return;
+            }
+            m_output->write(array.data(), m_audioOutput->periodSize());
+
     }
 }

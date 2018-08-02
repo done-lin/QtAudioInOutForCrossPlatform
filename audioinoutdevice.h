@@ -46,6 +46,7 @@ public slots:
     void slot_volume_changed(int volume);
 private slots:
     void slot_audio_output_push_timer_expired();
+    void slot_audio_output_get_data(QByteArray array);
 };
 
 #endif // AUDIOINOUTDEVICE_H
