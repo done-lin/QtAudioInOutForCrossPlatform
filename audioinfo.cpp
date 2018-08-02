@@ -136,7 +136,7 @@ qint64 AudioInfo::writeData(const char *data, qint64 len)
                     *reinterpret_cast<float*>(bufferPtr) = *reinterpret_cast<const float*>(ptr);
                 }
 
-                //qDebug("%s[%d]: value:%u", __FUNCTION__, __LINE__, value);
+                qDebug("%s[%d]: value:%u", __FUNCTION__, __LINE__, value);
                 *bufferPtr = qrand()%256;
                 maxValue = qMax(value, maxValue);
                 ptr += channelBytes;

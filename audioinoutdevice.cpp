@@ -141,8 +141,8 @@ void AudioOutDevWidget::slot_audio_output_push_timer_expired()
 void AudioOutDevWidget::slot_audio_output_get_data(QByteArray array)
 {
     if (m_audioOutput && m_audioOutput->state() != QAudio::StoppedState) {
-        qDebug("%s[%d]: bytesFree:%d, periodSize:%d, array.size:%d", __FUNCTION__, __LINE__,
-               m_audioOutput->bytesFree(),m_audioOutput->periodSize(), array.size());
+//        qDebug("%s[%d]: bytesFree:%d, periodSize:%d, array.size:%d", __FUNCTION__, __LINE__,
+//               m_audioOutput->bytesFree(),m_audioOutput->periodSize(), array.size());
 
             if ((m_audioOutput->bytesFree()<m_audioOutput->periodSize()) ||
                     (array.size() < m_audioOutput->periodSize())){
