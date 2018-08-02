@@ -82,7 +82,7 @@ void AudioOutDevWidget::create_testing_wave_generator(qint64 durationInUs, int s
 void AudioOutDevWidget::start_testing_wave_generator()
 {
     m_generator->start();
-    m_audioOutput->start(m_generator);
+    //m_audioOutput->start(m_generator);
 }
 
 void AudioOutDevWidget::create_sound_outputer()
@@ -121,6 +121,13 @@ void AudioOutDevWidget::slot_audio_output_push_timer_expired()
         while (chunks) {
             if(m_testFlag){
                 const qint64 len = m_generator->read(m_buffer.data(), m_audioOutput->periodSize());
+                if (len)
+                   m_output->write(m_buffer.data(), len);
+                if (len != m_audioOutput->periodSize())
+                   break;
+            }else{
+                qint64 len;
+                //const qint64 len = someIODevice_read(m_buffer.data(), m_audioOutput->periodSize());
                 if (len)
                    m_output->write(m_buffer.data(), len);
                 if (len != m_audioOutput->periodSize())
