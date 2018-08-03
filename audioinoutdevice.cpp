@@ -16,11 +16,12 @@ AudioOutDevWidget::AudioOutDevWidget(QWidget *parent, int sampleRate, int channe
         ,   m_audioInput(0)
         ,   m_output(0)
         ,   m_buffer(BufferSize, 0)
+        ,   m_pos(0)
 {
     m_pushTimer = new QTimer(this);
     this->setParent(parent);
     m_testFlag = usingTest;
-    //connect(m_pushTimer, SIGNAL(timeout()), SLOT(slot_audio_output_push_timer_expired()));
+    connect(m_pushTimer, SIGNAL(timeout()), SLOT(slot_audio_output_push_timer_expired()));
 
     m_format.setSampleRate(sampleRate);
     m_format.setChannelCount(channelCount);
@@ -36,19 +37,15 @@ AudioOutDevWidget::AudioOutDevWidget(QWidget *parent, int sampleRate, int channe
     }
 
     if(m_testFlag){
+        create_sound_outputer();
         create_testing_wave_generator(DEF_DURATIONSECONDS*1000000, DEF_WAVE_FREQUENCY);
-    }
-
-    create_sound_outputer();
-    slot_volume_changed(volume);
-
-    if(m_testFlag){
         start_testing_wave_generator();
+        m_pushTimer->start(20);
+    }else{
+        create_sound_outputer();
+        slot_volume_changed(volume);
+        m_output = m_audioOutput->start();
     }
-
-    m_output = m_audioOutput->start();
-    //m_pushTimer->start(20);
-
 }
 
 
@@ -82,7 +79,7 @@ void AudioOutDevWidget::create_testing_wave_generator(qint64 durationInUs, int s
 void AudioOutDevWidget::start_testing_wave_generator()
 {
     m_generator->start();
-    //m_audioOutput->start(m_generator);
+    m_audioOutput->start(m_generator);
 }
 
 void AudioOutDevWidget::create_sound_outputer()
@@ -141,15 +138,14 @@ void AudioOutDevWidget::slot_audio_output_push_timer_expired()
 void AudioOutDevWidget::slot_audio_output_get_data(QByteArray array)
 {
     if (m_audioOutput && m_audioOutput->state() != QAudio::StoppedState) {
-//        qDebug("%s[%d]: bytesFree:%d, periodSize:%d, array.size:%d", __FUNCTION__, __LINE__,
-//               m_audioOutput->bytesFree(),m_audioOutput->periodSize(), array.size());
-
-            if ((m_audioOutput->bytesFree()<m_audioOutput->periodSize()) ||
-                    (array.size() < m_audioOutput->periodSize())){
-                qDebug("%s[%d]: not enough", __FUNCTION__, __LINE__);
-                return;
-            }
-            m_output->write(array.data(), m_audioOutput->periodSize());
-
+        int chunks = m_audioOutput->bytesFree()/m_audioOutput->periodSize();
+        while (chunks) {
+               m_output->write(array.data()+m_pos, m_audioOutput->periodSize());
+           --chunks;
+           m_pos+=m_audioOutput->periodSize();
+           if(m_pos >= array.size()){
+               m_pos = 0;
+           }
+        }
     }
 }

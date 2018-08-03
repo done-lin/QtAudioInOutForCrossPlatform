@@ -34,6 +34,7 @@ public:
     QAudioFormat m_format;
     SinWaveGenerator *m_generator;
     QByteArray m_buffer;
+    qint64 m_pos;
 
 private:
     bool m_testFlag;

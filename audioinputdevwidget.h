@@ -25,7 +25,9 @@ public:
     void input_suspend();
     void input_resume();
     void createAudioInput();
-    AudioInfo *m_audioInfo;
+    void start_recording(void);
+    qint64 audio_buffer_length(void);
+    qint64 calculate_audio_length(const QAudioFormat &format, qint64 microSeconds);
 
 private:
     QAudioDeviceInfo m_device;
@@ -34,11 +36,15 @@ private:
     QAudioInput *m_audioInput;
     QIODevice *m_input;
     QByteArray m_buffer;
-
+    qint64 m_bytesReady;
+    qint64 m_dataLengthRecord;
+    qint64 m_bufferLength;
 signals:
+    void signal_finished_reading_from_microphone(QByteArray array);
 
 public slots:
     void slot_volume_changed(int volume);
+    void slot_capture_data_from_mic(void);
 //    void slot_readMore();
 };
 
