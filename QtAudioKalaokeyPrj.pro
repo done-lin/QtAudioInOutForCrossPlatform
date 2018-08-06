@@ -27,11 +27,9 @@ SOURCES += main.cpp\
         mainaudiowindow.cpp \
     audioinoutdevice.cpp \
     sinwavegenerator.cpp \
-    audioinfo.cpp \
     audioinputdevwidget.cpp
 
 HEADERS  += mainaudiowindow.h \
     audioinoutdevice.h \
     sinwavegenerator.h \
-    audioinfo.h \
     audioinputdevwidget.h

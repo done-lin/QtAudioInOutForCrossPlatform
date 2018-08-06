@@ -5,18 +5,17 @@
 #define DEF_WAVE_FREQUENCY 400
 #define DEF_USING_TEST
 
-const int BufferSize      = 32768;
 
 AudioOutDevWidget::AudioOutDevWidget(QWidget *parent, int sampleRate, int channelCount, int SampleSize, int volume, bool usingTest,
-                                   QAudioFormat::SampleType sampleType, QAudioFormat::Endian byteOrder)
+                                   QAudioFormat::SampleType sampleType, QAudioFormat::Endian byteOrder, const QSharedPointer <QByteArray> &m_audioDatSharedBuffer)
         : QWidget(parent)
         ,   m_device(QAudioDeviceInfo::defaultOutputDevice())
         ,   m_generator(0)
         ,   m_audioOutput(0)
         ,   m_audioInput(0)
         ,   m_output(0)
-        ,   m_buffer(BufferSize, 0)
         ,   m_pos(0)
+        ,   m_sharedBuffer(m_audioDatSharedBuffer)
 {
     m_pushTimer = new QTimer(this);
     this->setParent(parent);
@@ -117,16 +116,14 @@ void AudioOutDevWidget::slot_audio_output_push_timer_expired()
         int chunks = m_audioOutput->bytesFree()/m_audioOutput->periodSize();
         while (chunks) {
             if(m_testFlag){
-                const qint64 len = m_generator->read(m_buffer.data(), m_audioOutput->periodSize());
+                const qint64 len = m_generator->read(m_sharedBuffer->data(), m_audioOutput->periodSize());
                 if (len)
-                   m_output->write(m_buffer.data(), len);
+                   m_output->write(m_sharedBuffer->data(), len);
                 if (len != m_audioOutput->periodSize())
                    break;
             }else{
                 qint64 len;
-                //const qint64 len = someIODevice_read(m_buffer.data(), m_audioOutput->periodSize());
-                if (len)
-                   m_output->write(m_buffer.data(), len);
+                len = m_output->write(m_sharedBuffer->data(), len);
                 if (len != m_audioOutput->periodSize())
                    break;
             }
@@ -135,15 +132,15 @@ void AudioOutDevWidget::slot_audio_output_push_timer_expired()
     }
 }
 
-void AudioOutDevWidget::slot_audio_output_get_data(QByteArray array)
+void AudioOutDevWidget::slot_audio_output_get_data()
 {
     if (m_audioOutput && m_audioOutput->state() != QAudio::StoppedState) {
         int chunks = m_audioOutput->bytesFree()/m_audioOutput->periodSize();
         while (chunks) {
-               m_output->write(array.data()+m_pos, m_audioOutput->periodSize());
+               m_output->write(m_sharedBuffer->data()+m_pos, m_audioOutput->periodSize());
            --chunks;
            m_pos+=m_audioOutput->periodSize();
-           if(m_pos >= array.size()){
+           if(m_pos >= m_sharedBuffer->size()){
                m_pos = 0;
            }
         }

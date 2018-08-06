@@ -18,7 +18,8 @@ class AudioOutDevWidget : public QWidget
 
 public:
     explicit AudioOutDevWidget(QWidget *parent=0,  int sampleRate=44100, int channelCount=1, int SampleSize=16, int volume=100, bool usingTest=false,
-            QAudioFormat::SampleType sampleType=QAudioFormat::SignedInt, QAudioFormat::Endian byteOrder=QAudioFormat::LittleEndian);
+            QAudioFormat::SampleType sampleType=QAudioFormat::SignedInt, QAudioFormat::Endian byteOrder=QAudioFormat::LittleEndian,
+                               const QSharedPointer <QByteArray> &m_audioDatSharedBuffer=0);
 
 
     void set_sample_rate(int sampleRate);       //8000, 11025, 16000, 22050, 44100 and 48000
@@ -33,7 +34,7 @@ public:
 
     QAudioFormat m_format;
     SinWaveGenerator *m_generator;
-    QByteArray m_buffer;
+    QSharedPointer <QByteArray> m_sharedBuffer;
     qint64 m_pos;
 
 private:
@@ -47,7 +48,7 @@ public slots:
     void slot_volume_changed(int volume);
 private slots:
     void slot_audio_output_push_timer_expired();
-    void slot_audio_output_get_data(QByteArray array);
+    void slot_audio_output_get_data();
 };
 
 #endif // AUDIOINOUTDEVICE_H
