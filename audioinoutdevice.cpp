@@ -5,7 +5,7 @@
 #define DEF_WAVE_FREQUENCY 400
 #define DEF_USING_TEST
 
-const int BufferSize      = 4096;
+const int BufferSize      = 32768;
 
 AudioOutDevWidget::AudioOutDevWidget(QWidget *parent, int sampleRate, int channelCount, int SampleSize, int volume, bool usingTest,
                                    QAudioFormat::SampleType sampleType, QAudioFormat::Endian byteOrder)
