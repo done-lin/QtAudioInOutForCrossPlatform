@@ -76,7 +76,7 @@ void audioInputDevWidget::createAudioInput()
 void audioInputDevWidget::start_recording()
 {
     if(m_audioInput){
-        qDebug("%s[%d]: ", __FUNCTION__, __LINE__);
+        qDebug("%s[%d]: m_bufferLength:%lld", __FUNCTION__, __LINE__, m_bufferLength);
         m_dataLengthRecord = 0;
 
         m_sharedBuffer->resize(m_bufferLength);
@@ -121,15 +121,16 @@ void audioInputDevWidget::slot_capture_data_from_mic()
     const qint64 bytesRead = m_input->read(m_sharedBuffer->data()+m_dataLengthRecord,bytesToRead);
     qDebug() <<"bytesRead: " << bytesRead;
 
-    for(int cnt=0; cnt<bytesToRead; cnt++){//add for test
-        *(m_sharedBuffer->data()+cnt+(int)m_dataLengthRecord) = (char)qrand()%256;//add for test
+    for(int cnt=0; cnt<bytesRead; cnt++){//add for test
+        *(m_sharedBuffer->data()+cnt+m_dataLengthRecord) = (char)qrand()%256;//add for test
     }
 
     if (bytesRead) {
         m_dataLengthRecord += bytesRead;
+        emit signal_finished_reading_from_microphone();
     }
 
-    emit signal_finished_reading_from_microphone();
+
 
     if (m_sharedBuffer->size() == m_dataLengthRecord) {
         m_dataLengthRecord = 0;
