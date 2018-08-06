@@ -29,12 +29,12 @@ audioInputDevWidget::audioInputDevWidget(QWidget *parent, int sampleRate, int ch
         qWarning() << "INPUT dev: Default format not supported - trying to use nearest";
         m_format = info.nearestFormat(m_format);
     }
-    m_bufferLength = calculate_audio_length(m_format, 10*1000000);
+    m_bufferLength = calculate_audio_length(m_format, 8*1000000);
     qDebug("%s[%d]: ", __FUNCTION__, __LINE__);
     createAudioInput();
     qDebug("%s[%d]: ", __FUNCTION__, __LINE__);
     start_recording();
-    slot_volume_changed(volume/100.0f);
+    slot_volume_changed(volume);
 
 }
 
