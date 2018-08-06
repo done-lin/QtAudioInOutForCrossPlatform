@@ -121,9 +121,9 @@ void audioInputDevWidget::slot_capture_data_from_mic()
     const qint64 bytesRead = m_input->read(m_buffer.data()+m_dataLengthRecord,bytesToRead);
     qDebug() <<"bytesRead: " << bytesRead;
 
-    for(int cnt=0; cnt<bytesToRead; cnt++){
-        m_buffer[cnt+(int)m_dataLengthRecord] = qrand()%256;
-    }
+//    for(int cnt=0; cnt<bytesToRead; cnt++){
+//        m_buffer[cnt+(int)m_dataLengthRecord] = qrand()%256;
+//    }
 
     if (bytesRead) {
         m_dataLengthRecord += bytesRead;
@@ -131,7 +131,7 @@ void audioInputDevWidget::slot_capture_data_from_mic()
 
     emit signal_finished_reading_from_microphone(m_buffer);
 
-    if (m_buffer.size() == m_dataLengthRecord) {
+    if (m_buffer.size() >= m_dataLengthRecord) {
         m_dataLengthRecord = 0;
         qDebug() << "in capture Data buffer is full";
     }
