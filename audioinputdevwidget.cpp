@@ -127,9 +127,9 @@ void audioInputDevWidget::slot_capture_data_from_mic()
 
     if (bytesRead) {
         m_dataLengthRecord += bytesRead;
-        emit signal_finished_reading_from_microphone();
     }
 
+    emit signal_finished_reading_from_microphone();
 
 
     if (m_sharedBuffer->size() == m_dataLengthRecord) {
